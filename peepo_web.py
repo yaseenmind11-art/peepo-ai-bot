@@ -8,42 +8,36 @@ st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
 # --- 2. THEME STYLING ---
 st.markdown("""
 <style>
-/* LIGHT MODE: Gradient */
+/* LIGHT MODE: Your custom gradient */
 .stApp {
     background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%);
 }
 
-/* DARK MODE FIXES */
+/* DARK MODE: Pure black background and White Logo */
 @media (prefers-color-scheme: dark) {
-    /* Main Background to Black */
     .stApp, [data-testid="stHeader"] {
         background-color: #000000 !important;
         background-image: none !important;
     }
     
-    /* Top Header Bar to Black */
-    header[data-testid="stHeader"] {
-        background-color: #000000 !important;
-    }
-
-    /* Flip the Black 'P' sticker to White */
+    /* Flip the Black 'P' sticker to White only in Dark Mode */
     .p-sticker, [data-testid="stchatAvatarAssistant"] img, [data-testid="stImage"] img {
         filter: invert(1) brightness(2);
         background: transparent !important;
     }
 
-    /* Sidebar to deep dark */
+    /* Make sidebar match the black theme */
     [data-testid="stSidebar"] {
         background-color: #0a0a0a !important;
     }
-    
-    /* Ensure text is white */
+
+    /* Keep text white in dark mode */
     h1, h2, h3, p, span {
         color: #ffffff !important;
     }
 }
 
-/* Layout & Logo Alignment */
+/* Layout & Logo Fixes */
 .centered-logo {
     display: flex;
     justify-content: center;
@@ -52,12 +46,13 @@ st.markdown("""
 }
 
 .p-sticker {
-    border-radius: 50%;
+    border-radius: 50%; /* Keeps the 'P' clean */
 }
 </style>
 """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
+# Fetch the key from Streamlit Secrets
 API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
 MODEL_ID = "gemini-3.1-flash-lite-preview"
 client = genai.Client(api_key=API_KEY)
@@ -90,6 +85,7 @@ if st.session_state.current_chat is None:
     # WELCOME SCREEN
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
     if os.path.exists(LOGO_PATH):
+        # We give it a specific class so the CSS can find it
         st.image(LOGO_PATH, width=130)
     st.markdown('</div>', unsafe_allow_html=True)
     
@@ -107,6 +103,7 @@ else:
 
     # Message Display
     for message in st.session_state.all_chats[st.session_state.current_chat]:
+        # Use the 'P' logo for the assistant
         avatar = LOGO_PATH if message["role"] == "assistant" else None
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
