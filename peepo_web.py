@@ -5,8 +5,9 @@ import os
 # --- 1. PAGE CONFIG ---
 st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
 
-# --- 2. THEME STYLING (THEME-AWARE) ---
+# --- 2. THEME STYLING & GOOGLE VERIFICATION ---
 st.markdown("""
+<meta name="google-site-verification" content="W9JcAjDYAJtTHQz2toGnqDUsgQo34tcEmQSf-NItZug" />
 <style>
 /* 1. LIGHT THEME & DEFAULT GRADIENT */
 [data-theme="light"] .stApp, .stApp {
@@ -65,7 +66,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- 3. API SETUP ---
-# Fetching from Streamlit Secrets
 API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
 MODEL_ID = "gemini-3.1-flash-lite-preview"
 client = genai.Client(api_key=API_KEY)
