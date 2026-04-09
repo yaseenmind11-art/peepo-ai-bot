@@ -5,23 +5,17 @@ import os
 # --- 1. PAGE CONFIG ---
 st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
 
-# --- 2. THEME STYLING & GOOGLE VERIFICATION ---
+# --- 2. GOOGLE VERIFICATION & THEME STYLING ---
+# This block handles your Google Search ranking and the Light/Dark mode look
 st.markdown("""
 <meta name="google-site-verification" content="W9JcAjDYAJtTHQz2toGnqDUsgQo34tcEmQSf-NItZug" />
 <style>
-/* 1. LIGHT THEME & DEFAULT GRADIENT */
+/* LIGHT THEME & DEFAULT GRADIENT */
 [data-theme="light"] .stApp, .stApp {
     background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%) !important;
 }
 
-/* Ensure logo stays black in Light Mode */
-[data-theme="light"] .p-sticker, 
-[data-theme="light"] [data-testid="stchatAvatarAssistant"] img,
-[data-theme="light"] [data-testid="stImage"] img {
-    filter: none !important;
-}
-
-/* 2. DARK THEME (PURE BLACK) */
+/* DARK THEME (PURE BLACK) */
 [data-theme="dark"] .stApp, 
 [data-theme="dark"] [data-testid="stHeader"],
 @media (prefers-color-scheme: dark) {
@@ -51,7 +45,7 @@ st.markdown("""
     }
 }
 
-/* 3. LOGO & LAYOUT ALIGNMENT */
+/* LOGO & LAYOUT ALIGNMENT */
 .centered-logo {
     display: flex;
     justify-content: center;
