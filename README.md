@@ -1,1 +1,1 @@
-Peepo 3 AI, A bot that provides answers to all sorts of questions easily and smoothly.
+🤖 Peepo 3 AI - Your Ultimate Technical Assistant: Peepo 3 AI is a custom-built, high-performance web application designed to bridge the gap between complex engineering concepts and easy-to-understand AI interactions.
