@@ -2,8 +2,9 @@ import streamlit as st
 from google import genai
 import os
 
-# --- 1. PERMANENT VERIFICATION LOGIC ---
-# This serves the verification text ONLY when Google asks for it
+# --- 1. HIDDEN GOOGLE VERIFICATION ---
+# This serves the verification text ONLY when Google's bot checks your special link.
+# Your normal users will never see this.
 VERIFICATION_FILE = "google470ff30df2261297.html"
 if VERIFICATION_FILE in st.query_params:
     st.write(f"google-site-verification: {VERIFICATION_FILE}")
@@ -43,13 +44,12 @@ st.markdown(r"""
 
 # --- 4. API SETUP ---
 try:
-    # Make sure GEMINI_API_KEY is in your Streamlit Secrets!
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
     client = genai.Client(api_key=API_KEY)
 except Exception as e:
-    st.error("API Key missing! Please add it to Streamlit Secrets.")
+    st.error("API Key missing! Check your Streamlit Secrets.")
 
-# --- 5. SESSION STATE (Chat History) ---
+# --- 5. SESSION STATE ---
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
 if "current_chat" not in st.session_state:
@@ -63,7 +63,6 @@ with st.sidebar:
         st.rerun()
     st.divider()
     
-    # Search and Chat List
     search_query = st.text_input("🔍 Search chats...", placeholder="Type to filter...")
     for chat_title in reversed(list(st.session_state.all_chats.keys())):
         if not search_query or search_query.lower() in chat_title.lower():
@@ -83,7 +82,7 @@ if st.session_state.current_chat is None:
     st.markdown("<h1 style='text-align: center;'>Welcome to Peepo 3</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; opacity: 0.8;'>Ready for some Arduino coding or science help?</p>", unsafe_allow_html=True)
 else:
-    # Active Chat Header
+    # Chat Display
     header_col1, header_col2 = st.columns([1, 6])
     with header_col1:
         if os.path.exists(LOGO_PATH):
@@ -91,7 +90,6 @@ else:
     with header_col2:
         st.markdown(f"<h2 style='margin-top: 5px;'>{st.session_state.current_chat}</h2>", unsafe_allow_html=True)
     
-    # Display Messages
     for message in st.session_state.all_chats[st.session_state.current_chat]:
         avatar = LOGO_PATH if message["role"] == "assistant" else None
         with st.chat_message(message["role"], avatar=avatar):
@@ -104,14 +102,12 @@ if prompt := st.chat_input("Message Peepo 3..."):
         st.session_state.current_chat = new_title
         st.session_state.all_chats[new_title] = []
 
-    # Add user message
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
-    # Generate AI Response
     try:
         response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=prompt)
         ai_text = response.text
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": ai_text})
-        st.rerun() # Refresh to show new messages
+        st.rerun() 
     except Exception as e:
         st.error(f"⚠️ Error: {e}")
