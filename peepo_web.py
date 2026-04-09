@@ -2,22 +2,19 @@ import streamlit as st
 from google import genai
 import os
 
-# --- 1. HIDDEN GOOGLE VERIFICATION ---
-# This serves the verification text ONLY when Google's bot checks your special link.
-# Your normal users will never see this.
-VERIFICATION_FILE = "google470ff30df2261297.html"
-if VERIFICATION_FILE in st.query_params:
-    st.write(f"google-site-verification: {VERIFICATION_FILE}")
-    st.stop() 
+# --- 1. THE FAIL-SAFE VERIFICATION ---
+# This puts the tag in the HTML head. Google looks here first!
+st.markdown(
+    """
+    <head>
+        <meta name="google-site-verification" content="W9JcAjDYAJtTHQz2toGnqDUsgQo34tcEmQSf-NItZug" />
+    </head>
+    """, 
+    unsafe_allow_html=True
+)
 
 # --- 2. PAGE CONFIG ---
 st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
-
-# This is a backup "Meta Tag" method just in case Google prefers it
-st.markdown(
-    '<meta name="google-site-verification" content="W9JcAjDYAJtTHQz2toGnqDUsgQo34tcEmQSf-NItZug" />',
-    unsafe_allow_html=True
-)
 
 # --- 3. THEME STYLING ---
 st.markdown(r"""
@@ -50,13 +47,12 @@ st.markdown(r"""
 
 # --- 4. API SETUP ---
 try:
-    # Ensure GEMINI_API_KEY is in your Streamlit Secrets
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
     client = genai.Client(api_key=API_KEY)
 except Exception as e:
     st.error("API Key missing! Please add it to Streamlit Secrets.")
 
-# --- 5. SESSION STATE (Chat History) ---
+# --- 5. SESSION STATE ---
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
 if "current_chat" not in st.session_state:
@@ -97,7 +93,6 @@ else:
     with header_col2:
         st.markdown(f"<h2 style='margin-top: 5px;'>{st.session_state.current_chat}</h2>", unsafe_allow_html=True)
     
-    # Display Message History
     for message in st.session_state.all_chats[st.session_state.current_chat]:
         avatar = LOGO_PATH if message["role"] == "assistant" else None
         with st.chat_message(message["role"], avatar=avatar):
@@ -110,10 +105,8 @@ if prompt := st.chat_input("Message Peepo 3..."):
         st.session_state.current_chat = new_title
         st.session_state.all_chats[new_title] = []
 
-    # Add the user's message
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
-    # Get and add the AI's response
     try:
         response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=prompt)
         ai_text = response.text
