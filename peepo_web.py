@@ -3,11 +3,14 @@ from google import genai
 import os
 
 # ==========================================
-# 1. GOOGLE VERIFICATION (DO NOT REMOVE)
+# 1. PERMANENT GOOGLE VERIFICATION
 # ==========================================
 st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
 
-# This injects your ID: G-EBWJ79E1EE so Google can verify you
+# This is the Meta Tag Google Search Console looks for
+st.markdown('<meta name="google-site-verification" content="W9JcAjDYAJtTHQz2toGnqDUsgQo34tcEmQSf-NItZug" />', unsafe_allow_html=True)
+
+# This is your Measurement ID: G-EBWJ79E1EE
 st.markdown(
     """
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-EBWJ79E1EE"></script>
@@ -17,17 +20,16 @@ st.markdown(
       gtag('js', new Date());
       gtag('config', 'G-EBWJ79E1EE');
     </script>
-    <meta name="google-site-verification" content="W9JcAjDYAJtTHQz2toGnqDUsgQo34tcEmQSf-NItZug" />
     """, 
     unsafe_allow_html=True
 )
 
 # ==========================================
-# 2. COLOR THEME & STYLING
+# 2. RESTORE COLORS & THEME
 # ==========================================
 st.markdown(r"""
 <style>
-/* RESTORED BLUE/PURPLE GRADIENT */
+/* THE BLUE/PURPLE GRADIENT */
 [data-theme="light"] .stApp, .stApp {
     background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%) !important;
 }
@@ -56,9 +58,10 @@ st.markdown(r"""
 # 3. PEEPO 3 AI LOGIC
 # ==========================================
 try:
+    # API Key cleanup
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
     client = genai.Client(api_key=API_KEY)
-except Exception as e:
+except Exception:
     st.error("⚠️ API Key missing! Check your Streamlit Secrets.")
 
 if "all_chats" not in st.session_state:
