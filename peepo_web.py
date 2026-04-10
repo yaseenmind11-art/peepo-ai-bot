@@ -2,16 +2,15 @@ import streamlit as st
 from google import genai
 import os
 
-# ==========================================
-# 1. GOOGLE VERIFICATION (DO NOT REMOVE)
-# ==========================================
-# Bypass for Streamlit loading speed issues
+# --- THIS IS THE PART GOOGLE NEEDS ---
 if "google470ff30df2261297.html" in st.query_params:
     st.write("google-site-verification: google470ff30df2261297.html")
     st.stop()
 
-# Your specific Meta Tag
 st.markdown('<meta name="google-site-verification" content="W9JcAjDYAJtTHQz2toGnqDUsgQo34tcEmQSf-NItZug" />', unsafe_allow_html=True)
+# -------------------------------------
+
+# ... rest of your code ...
 
 # Hidden text backup
 st.write(f'<p style="display:none;">google-site-verification: google470ff30df2261297.html</p>', unsafe_allow_html=True)
