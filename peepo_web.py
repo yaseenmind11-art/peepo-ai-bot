@@ -1,107 +1,96 @@
 import streamlit as st
 from google import genai
-from google.genai import types
 import os
 
-# ==========================================
-# 1. PAGE SETUP
-# ==========================================
-st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
+# --- 1. THE ULTIMATE VERIFICATION DOOR ---
+# This catches Google's request before the rest of the app even loads.
+if "google470ff30df2261297.html" in st.query_params:
+    st.write("google-site-verification: google470ff30df2261297.html")
+    st.stop()
 
-# ==========================================
-# 2. THEME & STYLE
-# ==========================================
+# --- 2. PAGE CONFIG ---
+st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
+
+# --- 3. THEME STYLING ---
 st.markdown(r"""
 <style>
+/* LIGHT THEME */
 [data-theme="light"] .stApp, .stApp {
     background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%) !important;
 }
-[data-theme="dark"] .stApp { background-color: #000000 !important; }
+/* DARK THEME */
+[data-theme="dark"] .stApp, [data-theme="dark"] [data-testid="stHeader"] {
+    background-color: #000000 !important;
+    background-image: none !important;
+}
+[data-theme="dark"] .p-sticker, 
+[data-theme="dark"] [data-testid="stchatAvatarAssistant"] img {
+    filter: invert(1) brightness(2) !important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] {
+    background-color: #0a0a0a !important;
+}
 .centered-logo {
-    display: flex; justify-content: center; align-items: center;
-    margin-bottom: 10px; padding-top: 40px;
-}
-.main-title {
-    font-size: 85px !important; font-weight: 900 !important;
-    text-align: center; margin-top: -10px; letter-spacing: -1.5px;
-}
-.main-subtitle {
-    font-size: 22px !important; text-align: center; color: #666; margin-top: -20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: -40px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 3. API SETUP
-# ==========================================
+# --- 4. API SETUP ---
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
     client = genai.Client(api_key=API_KEY)
-except Exception:
-    st.error("⚠️ API Key missing in Secrets!")
+except Exception as e:
+    st.error("API Key missing! Add it to Streamlit Secrets.")
 
+# --- 5. SESSION STATE ---
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
 
+# --- 6. SIDEBAR ---
 with st.sidebar:
     st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.current_chat = None 
         st.rerun()
     st.divider()
+    search_query = st.text_input("🔍 Search chats...", placeholder="Type to filter...")
     for chat_title in reversed(list(st.session_state.all_chats.keys())):
-        if st.button(chat_title, key=chat_title, use_container_width=True):
-            st.session_state.current_chat = chat_title
-            st.rerun()
+        if not search_query or search_query.lower() in chat_title.lower():
+            if st.button(chat_title, key=chat_title, use_container_width=True):
+                st.session_state.current_chat = chat_title
+                st.rerun()
 
+# --- 7. MAIN INTERFACE ---
 LOGO_PATH = "image_13ffcc.png"
-
-# ==========================================
-# 4. WELCOME SCREEN
-# ==========================================
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
     if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, width=120) 
+        st.image(LOGO_PATH, width=130)
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<p class="main-title">peepo 3 ai</p>', unsafe_allow_html=True)
-    st.markdown('<p class="main-subtitle">ask me for anything!</p>', unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center;'>Welcome to Peepo 3</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>Ready for some Arduino coding or science help?</p>", unsafe_allow_html=True)
 else:
     for message in st.session_state.all_chats[st.session_state.current_chat]:
         avatar = LOGO_PATH if message["role"] == "assistant" else None
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-# ==========================================
-# 5. CHAT INPUT (STABILITY PATCH)
-# ==========================================
-if prompt := st.chat_input("Message peepo 3 ai..."):
+# --- 8. CHAT INPUT BAR ---
+if prompt := st.chat_input("Message Peepo 3..."):
     if st.session_state.current_chat is None:
         new_title = prompt[:25] + "..." if len(prompt) > 25 else prompt
         st.session_state.current_chat = new_title
         st.session_state.all_chats[new_title] = []
-    
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
-    
     try:
-        # THE ULTIMATE FIX: Using the exact technical ID for the stable model
-        response = client.models.generate_content(
-            model="gemini-1.5-flash", 
-            config=types.GenerateContentConfig(
-                system_instruction="You are Peepo-Sec, a White Hat Hacker."
-            ),
-            contents=prompt
-        )
-        
+        response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=prompt)
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
         st.rerun() 
     except Exception as e:
-        # If the model still can't be found, we try the fallback ID
-        try:
-            response = client.models.generate_content(model="gemini-1.5-flash-001", contents=prompt)
-            st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
-            st.rerun()
-        except:
-            st.error(f"Error: {e}")
+        st.error(f"⚠️ Error: {e}")
