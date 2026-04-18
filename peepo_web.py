@@ -6,7 +6,8 @@ import os
 # ==========================================
 # 1. GOOGLE VERIFICATION & SEO
 # ==========================================
-st.set_page_config(page_title="pepo 3", page_icon="image_13ffcc.png")
+# UPDATED: Page title changed to "pepo 3 ai"
+st.set_page_config(page_title="pepo 3 ai", page_icon="image_13ffcc.png")
 
 VERIFICATION_FILE = "google470ff30df2261297.html" 
 
@@ -31,7 +32,7 @@ st.markdown(
 )
 
 # ==========================================
-# 2. THEME & STYLING (THE CLEAN ZOOM)
+# 2. THEME & STYLING
 # ==========================================
 st.markdown(r"""
 <style>
@@ -50,7 +51,7 @@ st.markdown(r"""
     background-color: #0a0a0a !important;
 }
 
-/* LOGO BOX - Zoomed out for space */
+/* LOGO BOX */
 .centered-logo {
     display: flex;
     justify-content: center;
@@ -59,7 +60,7 @@ st.markdown(r"""
     padding-top: 40px;
 }
 
-/* MAIN TITLE - Big and bold but fits the frame */
+/* MAIN TITLE - "pepo" version */
 .main-title {
     font-size: 85px !important; 
     font-weight: 900 !important;
@@ -69,7 +70,7 @@ st.markdown(r"""
     color: #31333F;
 }
 
-/* SUBTITLE - Clean and small */
+/* SUBTITLE */
 .main-subtitle {
     font-size: 22px !important;
     text-align: center;
@@ -82,13 +83,13 @@ st.markdown(r"""
 /* DARK MODE TEXT COLOR */
 [data-theme="dark"] .main-title { color: #ffffff !important; }
 [data-theme="dark"] .main-subtitle { color: #cccccc !important; }
-
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. PEEPO-SEC SYSTEM INSTRUCTIONS
+# 3. PEPO-SEC SYSTEM INSTRUCTIONS
 # ==========================================
+# UPDATED: AI name changed to "Pepo-Sec"
 SYSTEM_INSTRUCTION = """
 You are Pepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
 Your mission is to help the user learn how to protect devices, find vulnerabilities 
@@ -132,13 +133,11 @@ LOGO_PATH = "image_13ffcc.png"
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
     if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, width=120) # Slightly smaller logo for better zoom
+        st.image(LOGO_PATH, width=120) 
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # BIG TITLE
-    st.markdown('<p class="main-title">pepo 3 AI</p>', unsafe_allow_html=True)
-    
-    # ZOOMED OUT SUBTITLE
+    # UPDATED: Titles now say "pepo"
+    st.markdown('<p class="main-title">pepo 3 ai</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-subtitle">ask me for anything!</p>', unsafe_allow_html=True)
 else:
     for message in st.session_state.all_chats[st.session_state.current_chat]:
@@ -149,7 +148,7 @@ else:
 # ==========================================
 # 6. CHAT INPUT
 # ==========================================
-if prompt := st.chat_input("Message pepo 3 ..."):
+if prompt := st.chat_input("Message pepo 3 ai..."):
     if st.session_state.current_chat is None:
         new_title = prompt[:25] + "..." if len(prompt) > 25 else prompt
         st.session_state.current_chat = new_title
