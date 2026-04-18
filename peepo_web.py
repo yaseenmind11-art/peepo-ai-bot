@@ -3,7 +3,6 @@ from google import genai
 import os
 
 # --- 1. THE ULTIMATE VERIFICATION DOOR ---
-# This catches Google's request before the rest of the app even loads.
 if "google470ff30df2261297.html" in st.query_params:
     st.write("google-site-verification: google470ff30df2261297.html")
     st.stop()
@@ -74,12 +73,15 @@ if st.session_state.current_chat is None:
         st.image(LOGO_PATH, width=130)
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center;'>Welcome to Peepo 3</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>Ready for some Arduino coding or science help?</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>Ready for some Arduino coding, science help, or generating images?</p>", unsafe_allow_html=True)
 else:
     for message in st.session_state.all_chats[st.session_state.current_chat]:
         avatar = LOGO_PATH if message["role"] == "assistant" else None
         with st.chat_message(message["role"], avatar=avatar):
-            st.markdown(message["content"])
+            if "image" in message:
+                st.image(message["image"])
+            if "content" in message and message["content"]:
+                st.markdown(message["content"])
 
 # --- 8. CHAT INPUT BAR ---
 if prompt := st.chat_input("Message Peepo 3..."):
@@ -87,10 +89,28 @@ if prompt := st.chat_input("Message Peepo 3..."):
         new_title = prompt[:25] + "..." if len(prompt) > 25 else prompt
         st.session_state.current_chat = new_title
         st.session_state.all_chats[new_title] = []
+    
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
+    
     try:
-        response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=prompt)
-        st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
+        # Check if user wants an image
+        if any(word in prompt.lower() for word in ["draw", "generate image", "make a picture", "image of"]):
+            # Use the Imagen model for drawing
+            response = client.models.generate_image(
+                model="imagen-3",
+                prompt=prompt,
+            )
+            image = response.generated_images[0].image.show() # This triggers the image generation
+            st.session_state.all_chats[st.session_state.current_chat].append({
+                "role": "assistant", 
+                "content": f"Here is your image for: '{prompt}'",
+                "image": response.generated_images[0].image
+            })
+        else:
+            # Normal text chat
+            response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=prompt)
+            st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
+        
         st.rerun() 
     except Exception as e:
         st.error(f"⚠️ Error: {e}")
