@@ -10,21 +10,16 @@ import time
 st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
 
 # ==========================================
-# 2. THEME & STYLING (ZOOMED OUT LOOK)
+# 2. THEME & STYLING
 # ==========================================
 st.markdown(r"""
 <style>
-/* LIGHT MODE GRADIENT */
 [data-theme="light"] .stApp, .stApp {
     background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%) !important;
 }
-
-/* DARK MODE FIX */
 [data-theme="dark"] .stApp, [data-theme="dark"] [data-testid="stHeader"] {
     background-color: #000000 !important;
 }
-
-/* LOGO BOX */
 .centered-logo {
     display: flex;
     justify-content: center;
@@ -32,49 +27,35 @@ st.markdown(r"""
     margin-bottom: 10px;
     padding-top: 40px;
 }
-
-/* MAIN TITLE - BIG AND BOLD */
 .main-title {
     font-size: 85px !important; 
     font-weight: 900 !important;
     text-align: center;
     margin-top: -10px;
     letter-spacing: -1.5px;
-    color: #31333F;
 }
-
-/* SUBTITLE - ZOOMED OUT */
 .main-subtitle {
     font-size: 22px !important;
     text-align: center;
     color: #666;
     margin-top: -20px;
 }
-
-/* DARK MODE TEXT COLOR */
-[data-theme="dark"] .main-title { color: #ffffff !important; }
-[data-theme="dark"] .main-subtitle { color: #cccccc !important; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. PEEPO-SEC BRAIN (SYSTEM PROMPT)
+# 3. PEEPO-SEC BRAIN
 # ==========================================
-SYSTEM_INSTRUCTION = """
-You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
-Your mission is to help the user learn how to protect devices, find vulnerabilities 
-legally, and stop dangerous cyber-attacks. 
-Always prioritize teaching 'Defense' and 'Ethical Research'.
-"""
+SYSTEM_INSTRUCTION = "You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher."
 
 # ==========================================
-# 4. API & SESSION SETUP
+# 4. API SETUP
 # ==========================================
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
     client = genai.Client(api_key=API_KEY)
 except Exception:
-    st.error("⚠️ API Key missing in Streamlit Secrets!")
+    st.error("⚠️ API Key missing!")
 
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
@@ -111,7 +92,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 6. CHAT INPUT (GEMINI 3.1 FLASH)
+# 6. CHAT INPUT (STABLE GEMINI 2.0)
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
@@ -122,9 +103,9 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # UPDATED: Set to Gemini 3.1 Flash
+        # THE FIX: Using the reliable 2.0 Flash model
         response = client.models.generate_content(
-            model="gemini-3.1-flash", 
+            model="gemini-2.0-flash", 
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION
             ),
@@ -133,11 +114,9 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
         
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
         st.rerun() 
-
     except Exception as e:
-        error_msg = str(e)
-        if "429" in error_msg:
-            st.warning("🚦 Peepo 3.1 is working hard! Waiting 5s to bypass rate limit...")
+        if "429" in str(e):
+            st.warning("🚦 Rate limit reached. Waiting 5s...")
             time.sleep(5)
             st.rerun()
         else:
