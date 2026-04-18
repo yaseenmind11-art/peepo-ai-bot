@@ -2,54 +2,38 @@ import streamlit as st
 from google import genai
 from google.genai import types
 import os
-import time
 
 # ==========================================
-# 1. GOOGLE VERIFICATION & SEO
+# 1. PAGE SETUP
 # ==========================================
 st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
 
 # ==========================================
-# 2. THEME & STYLING
+# 2. THEME & STYLE (THE BIG TITLE)
 # ==========================================
 st.markdown(r"""
 <style>
 [data-theme="light"] .stApp, .stApp {
     background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%) !important;
 }
-[data-theme="dark"] .stApp, [data-theme="dark"] [data-testid="stHeader"] {
-    background-color: #000000 !important;
-}
+[data-theme="dark"] .stApp { background-color: #000000 !important; }
 .centered-logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-top: 40px;
+    display: flex; justify-content: center; align-items: center;
+    margin-bottom: 10px; padding-top: 40px;
 }
 .main-title {
-    font-size: 85px !important; 
-    font-weight: 900 !important;
-    text-align: center;
-    margin-top: -10px;
-    letter-spacing: -1.5px;
+    font-size: 85px !important; font-weight: 900 !important;
+    text-align: center; margin-top: -10px; letter-spacing: -1.5px;
 }
 .main-subtitle {
-    font-size: 22px !important;
-    text-align: center;
-    color: #666;
-    margin-top: -20px;
+    font-size: 22px !important; text-align: center;
+    color: #666; margin-top: -20px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. PEEPO-SEC BRAIN
-# ==========================================
-SYSTEM_INSTRUCTION = "You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher."
-
-# ==========================================
-# 4. API SETUP
+# 3. API SETUP
 # ==========================================
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
@@ -62,6 +46,7 @@ if "all_chats" not in st.session_state:
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
 
+# Sidebar
 with st.sidebar:
     st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
@@ -76,7 +61,7 @@ with st.sidebar:
 LOGO_PATH = "image_13ffcc.png"
 
 # ==========================================
-# 5. WELCOME SCREEN
+# 4. WELCOME SCREEN
 # ==========================================
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
@@ -92,7 +77,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 6. CHAT INPUT (STABLE GEMINI 2.0)
+# 5. CHAT INPUT (STABLE 1.5 FLASH)
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
@@ -103,11 +88,11 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # THE FIX: Using the reliable 2.0 Flash model
+        # THE FIX: Using 1.5 Flash for high reliability and no 429 errors
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model="gemini-1.5-flash", 
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_INSTRUCTION
+                system_instruction="You are Peepo-Sec, a White Hat Hacker."
             ),
             contents=prompt
         )
@@ -115,9 +100,4 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
         st.rerun() 
     except Exception as e:
-        if "429" in str(e):
-            st.warning("🚦 Rate limit reached. Waiting 5s...")
-            time.sleep(5)
-            st.rerun()
-        else:
-            st.error(f"Error: {e}")
+        st.error(f"Error: {e}")
