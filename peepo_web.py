@@ -60,7 +60,7 @@ st.markdown(r"""
     padding-top: 40px;
 }
 
-/* MAIN TITLE - "pepo" version */
+/* MAIN TITLE - "peepo" version */
 .main-title {
     font-size: 85px !important; 
     font-weight: 900 !important;
