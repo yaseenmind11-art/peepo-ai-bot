@@ -1,132 +1,90 @@
-import streamlit as st
-from google import genai
-import os
-
-# --- 1. PAGE CONFIG ---
-st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
-
-# --- 2. THEME STYLING ---
-st.markdown("""
-<style>
-/* LIGHT MODE: Gradient */
-.stApp {
-    background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%);
-}
-
-/* DARK MODE FIXES */
-@media (prefers-color-scheme: dark) {
-    /* Main Background to Black */
-    .stApp, [data-testid="stHeader"] {
-        background-color: #000000 !important;
-        background-image: none !important;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.104/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.104/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <style>
+    #cesiumContainer { width: 100%; height: 100vh; margin: 0; background: #000; }
+    body { margin: 0; overflow: hidden; }
+    #hud {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 400px; height: 300px; border: 2px solid #00ff00; pointer-events: none;
+      color: #00ff00; font-family: monospace; display: flex; justify-content: space-between; padding: 20px;
     }
-    
-    /* Top Header Bar to Black */
-    header[data-testid="stHeader"] {
-        background-color: #000000 !important;
+    #ui { position: absolute; top: 10px; left: 10px; z-index: 100; }
+    #search { padding: 10px; width: 250px; border-radius: 5px; border: 1px solid #00ff00; background: rgba(0,0,0,0.8); color: white; }
+  </style>
+</head>
+<body>
+  <div id="ui"><input type="text" id="search" placeholder="Enter Airport or City..."></div>
+  <div id="hud">
+    <div id="speed">SPD: 0 kn</div>
+    <div id="crosshair">+</div>
+    <div id="alt">ALT: 0 ft</div>
+  </div>
+  <div id="cesiumContainer"></div>
+
+  <script>
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNDM2YzA1OS1jNzFjLTRmNzAtYWRlNC0wODAwYzUzMmJiZWQiLCJpZCI6NDE3NTMxLCJpYXQiOjE3NzYwODA0ODZ9.MYY2-6pFSiV00YlGiEp5TX_Ic2cp8kn4ifbzdQgyFbs';
+
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+      terrainProvider: Cesium.createWorldTerrain(),
+      animation: false, timeline: false, baseLayerPicker: false
+    });
+
+    // 1. Load HD 3D World
+    async function initWorld() {
+      const buildings = await Cesium.createGooglePhotorealistic3DTileset();
+      viewer.scene.primitives.add(buildings);
     }
+    initWorld();
 
-    /* Flip the Black 'P' sticker to White */
-    .p-sticker, [data-testid="stchatAvatarAssistant"] img, [data-testid="stImage"] img {
-        filter: invert(1) brightness(2);
-        background: transparent !important;
+    // 2. Load the F-16 Model
+    const jetPosition = Cesium.Cartesian3.fromDegrees(31.405, 30.121, 500);
+    const jetEntity = viewer.entities.add({
+      name: 'F-16 Fighting Falcon',
+      position: jetPosition,
+      model: {
+        uri: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF/Duck.gltf', // PLACEHOLDER: Swap with F-16 .glb URL
+        minimumPixelSize: 128,
+        maximumScale: 20000
+      }
+    });
+
+    viewer.trackedEntity = jetEntity; // Camera follows the jet
+
+    // 3. Flight Controls
+    let speed = 0.0001; 
+    let pitch = 0;
+    let heading = 0;
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'w') pitch += 0.01; // Nose Up
+      if (e.key === 's') pitch -= 0.01; // Nose Down
+      if (e.key === 'a') heading -= 0.01; // Turn Left
+      if (e.key === 'd') heading += 0.01; // Turn Right
+      if (e.key === 'Shift') speed += 0.0001; // Afterburner
+    });
+
+    function flightLoop() {
+      const position = jetEntity.position.getValue(viewer.clock.currentTime);
+      if (position) {
+        // Update position based on heading and speed
+        const cartographic = Cesium.Cartographic.fromCartesian(position);
+        const newLon = cartographic.longitude + (Math.sin(heading) * speed);
+        const newLat = cartographic.latitude + (Math.cos(heading) * speed);
+        const newAlt = cartographic.height + (pitch * 10);
+
+        jetEntity.position = Cesium.Cartesian3.fromRadians(newLon, newLat, newAlt);
+        
+        // Update HUD
+        document.getElementById('alt').innerText = "ALT: " + Math.round(newAlt * 3.28) + " ft";
+        document.getElementById('speed').innerText = "SPD: " + Math.round(speed * 100000) + " kn";
+      }
+      requestAnimationFrame(flightLoop);
     }
-
-    /* Sidebar to deep dark */
-    [data-testid="stSidebar"] {
-        background-color: #0a0a0a !important;
-    }
-    
-    /* Ensure text is white */
-    h1, h2, h3, p, span {
-        color: #ffffff !important;
-    }
-}
-
-/* Layout & Logo Alignment */
-.centered-logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: -40px;
-}
-
-.p-sticker {
-    border-radius: 50%;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# --- 3. API SETUP ---
-API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
-MODEL_ID = "gemini-3.1-flash-lite-preview"
-client = genai.Client(api_key=API_KEY)
-
-# --- 4. SESSION STATE ---
-if "all_chats" not in st.session_state:
-    st.session_state.all_chats = {} 
-if "current_chat" not in st.session_state:
-    st.session_state.current_chat = None 
-
-# --- 5. SIDEBAR ---
-with st.sidebar:
-    st.title("📂 Peepo History")
-    if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.current_chat = None 
-        st.rerun()
-    st.divider()
-    search_query = st.text_input("🔍 Search chats...", placeholder="Type to filter...")
-    for chat_title in reversed(list(st.session_state.all_chats.keys())):
-        if not search_query or search_query.lower() in chat_title.lower():
-            if st.button(chat_title, key=chat_title, use_container_width=True):
-                st.session_state.current_chat = chat_title
-                st.rerun()
-
-# --- 6. LOGO PATH ---
-LOGO_PATH = "image_13ffcc.png"
-
-# --- 7. MAIN INTERFACE ---
-if st.session_state.current_chat is None:
-    # WELCOME SCREEN
-    st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
-    if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, width=130)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown("<h1 style='text-align: center;'>Welcome to Peepo 3</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; opacity: 0.8;'>Ready for some Arduino coding or science help?</p>", unsafe_allow_html=True)
-
-else:
-    # ACTIVE CHAT HEADER
-    header_col1, header_col2 = st.columns([1, 6])
-    with header_col1:
-        if os.path.exists(LOGO_PATH):
-            st.image(LOGO_PATH, width=50)
-    with header_col2:
-        st.markdown(f"<h2 style='margin-top: 5px;'>{st.session_state.current_chat}</h2>", unsafe_allow_html=True)
-
-    # Message Display
-    for message in st.session_state.all_chats[st.session_state.current_chat]:
-        avatar = LOGO_PATH if message["role"] == "assistant" else None
-        with st.chat_message(message["role"], avatar=avatar):
-            st.markdown(message["content"])
-
-# --- 8. CHAT INPUT ---
-if prompt := st.chat_input("Message Peepo 3..."):
-    if st.session_state.current_chat is None:
-        new_title = prompt[:25] + "..." if len(prompt) > 25 else prompt
-        st.session_state.current_chat = new_title
-        st.session_state.all_chats[new_title] = []
-
-    st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    try:
-        response = client.models.generate_content(model=MODEL_ID, contents=prompt)
-        ai_text = response.text
-        st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": ai_text})
-        with st.chat_message("assistant", avatar=LOGO_PATH):
-            st.markdown(ai_text)
-    except Exception as e:
-        st.error(f"⚠️ Error: {e}")
+    flightLoop();
+  </script>
+</body>
+</html>
