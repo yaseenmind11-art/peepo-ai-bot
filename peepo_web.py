@@ -8,7 +8,6 @@ import os
 # ==========================================
 st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
 
-# Replace this with your actual code from Google Search Console
 VERIFICATION_FILE = "google470ff30df2261297.html" 
 
 if VERIFICATION_FILE in st.query_params or "verify" in st.query_params:
@@ -32,7 +31,7 @@ st.markdown(
 )
 
 # ==========================================
-# 2. THEME & STYLING
+# 2. THEME & STYLING (THE BIG LOOK)
 # ==========================================
 st.markdown(r"""
 <style>
@@ -56,15 +55,35 @@ st.markdown(r"""
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: -40px;
+    margin-bottom: -20px;
 }
+
+/* BIG TEXT STYLING */
+.main-title {
+    font-size: 80px !important;
+    font-weight: 800 !important;
+    text-align: center;
+    margin-top: -20px;
+    color: #31333F;
+}
+
+.main-subtitle {
+    font-size: 30px !important;
+    text-align: center;
+    color: #555;
+    margin-top: -10px;
+}
+
+/* DARK MODE TEXT COLOR FIX */
+[data-theme="dark"] .main-title { color: #ffffff !important; }
+[data-theme="dark"] .main-subtitle { color: #bbbbbb !important; }
+
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
 # 3. PEEPO-SEC SYSTEM INSTRUCTIONS
 # ==========================================
-# This is the "White Hat" brain setup
 SYSTEM_INSTRUCTION = """
 You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
 Your mission is to help the user learn how to protect devices, find vulnerabilities 
@@ -106,17 +125,15 @@ LOGO_PATH = "image_13ffcc.png"
 # 5. WELCOME SCREEN OR CHAT DISPLAY
 # ==========================================
 if st.session_state.current_chat is None:
-    # WELCOME SCREEN
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
     if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, width=130)
+        st.image(LOGO_PATH, width=180) # Made the logo a bit bigger too
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # YOUR CUSTOM TITLES
-    st.markdown("<h1 style='text-align: center;'>peepo 3 ai</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #555;'>ask me for anything!</p>", unsafe_allow_html=True)
+    # THE BIG TITLES
+    st.markdown('<p class="main-title">peepo 3 ai</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-subtitle">ask me for anything!</p>', unsafe_allow_html=True)
 else:
-    # DISPLAY CURRENT MESSAGES
     for message in st.session_state.all_chats[st.session_state.current_chat]:
         avatar = LOGO_PATH if message["role"] == "assistant" else None
         with st.chat_message(message["role"], avatar=avatar):
@@ -134,7 +151,6 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # Generate with the White Hat Instructions
         response = client.models.generate_content(
             model="gemini-2.0-flash", 
             config=types.GenerateContentConfig(
@@ -147,4 +163,3 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
         st.rerun() 
     except Exception as e:
         st.error(f"Error: {e}")
-        st.info("Wait 1 minute and refresh if the server is busy!")
