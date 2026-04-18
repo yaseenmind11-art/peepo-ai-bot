@@ -16,7 +16,7 @@ if VERIFICATION_FILE in st.query_params or "verify" in st.query_params:
 
 st.markdown(f'<meta name="google-site-verification" content="{VERIFICATION_FILE.replace(".html", "")}" />', unsafe_allow_html=True)
 
-# Google Analytics Tag
+# Google Analytics
 st.markdown(
     """
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-EBWJ79E1EE"></script>
@@ -31,7 +31,7 @@ st.markdown(
 )
 
 # ==========================================
-# 2. THEME & STYLING (THE BIG LOOK)
+# 2. THEME & STYLING (THE PERFECT ZOOM)
 # ==========================================
 st.markdown(r"""
 <style>
@@ -50,31 +50,34 @@ st.markdown(r"""
     background-color: #0a0a0a !important;
 }
 
-/* LOGO CENTERING */
+/* LOGO BOX - Zoomed out a bit */
 .centered-logo {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: -20px;
+    margin-bottom: -10px;
 }
 
-/* BIG TEXT STYLING */
+/* MAIN TITLE - Slightly Bigger & Bolder */
 .main-title {
-    font-size: 80px !important;
-    font-weight: 800 !important;
+    font-size: 95px !important; /* Boosted size */
+    font-weight: 900 !important;
     text-align: center;
-    margin-top: -20px;
+    margin-top: -15px;
+    letter-spacing: -2px;
     color: #31333F;
 }
 
+/* SUBTITLE - Zoomed out (Smaller than title) */
 .main-subtitle {
-    font-size: 30px !important;
+    font-size: 26px !important;
     text-align: center;
     color: #555;
-    margin-top: -10px;
+    margin-top: -20px;
+    font-weight: 400;
 }
 
-/* DARK MODE TEXT COLOR FIX */
+/* DARK MODE TEXT COLOR */
 [data-theme="dark"] .main-title { color: #ffffff !important; }
 [data-theme="dark"] .main-subtitle { color: #bbbbbb !important; }
 
@@ -107,7 +110,7 @@ if "all_chats" not in st.session_state:
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
 
-# Sidebar for History
+# Sidebar History
 with st.sidebar:
     st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
@@ -122,16 +125,18 @@ with st.sidebar:
 LOGO_PATH = "image_13ffcc.png"
 
 # ==========================================
-# 5. WELCOME SCREEN OR CHAT DISPLAY
+# 5. WELCOME SCREEN
 # ==========================================
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
     if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, width=180) # Made the logo a bit bigger too
+        st.image(LOGO_PATH, width=150) # Logo is clear but not too huge
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # THE BIG TITLES
+    # HUGE TITLE
     st.markdown('<p class="main-title">peepo 3 ai</p>', unsafe_allow_html=True)
+    
+    # CLEAN SUBTITLE
     st.markdown('<p class="main-subtitle">ask me for anything!</p>', unsafe_allow_html=True)
 else:
     for message in st.session_state.all_chats[st.session_state.current_chat]:
@@ -140,7 +145,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 6. CHAT INPUT & GENERATION
+# 6. CHAT INPUT
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
