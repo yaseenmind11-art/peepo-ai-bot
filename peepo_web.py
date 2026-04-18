@@ -10,16 +10,21 @@ import time
 st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
 
 # ==========================================
-# 2. THEME & STYLING
+# 2. THEME & STYLING (ZOOMED OUT LOOK)
 # ==========================================
 st.markdown(r"""
 <style>
+/* LIGHT MODE GRADIENT */
 [data-theme="light"] .stApp, .stApp {
     background: linear-gradient(135deg, #d1e9ff 0%, #e1d5f5 50%, #ffffff 100%) !important;
 }
+
+/* DARK MODE FIX */
 [data-theme="dark"] .stApp, [data-theme="dark"] [data-testid="stHeader"] {
     background-color: #000000 !important;
 }
+
+/* LOGO BOX */
 .centered-logo {
     display: flex;
     justify-content: center;
@@ -27,19 +32,28 @@ st.markdown(r"""
     margin-bottom: 10px;
     padding-top: 40px;
 }
+
+/* MAIN TITLE - BIG AND BOLD */
 .main-title {
     font-size: 85px !important; 
     font-weight: 900 !important;
     text-align: center;
     margin-top: -10px;
     letter-spacing: -1.5px;
+    color: #31333F;
 }
+
+/* SUBTITLE - ZOOMED OUT */
 .main-subtitle {
     font-size: 22px !important;
     text-align: center;
     color: #666;
     margin-top: -20px;
 }
+
+/* DARK MODE TEXT COLOR */
+[data-theme="dark"] .main-title { color: #ffffff !important; }
+[data-theme="dark"] .main-subtitle { color: #cccccc !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -97,7 +111,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 6. CHAT INPUT (GEMINI 3 FLASH)
+# 6. CHAT INPUT (GEMINI 3.1 FLASH)
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
@@ -108,9 +122,9 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # UPDATED: Set to the newest Gemini 3 model
+        # UPDATED: Set to Gemini 3.1 Flash
         response = client.models.generate_content(
-            model="gemini-3-flash", 
+            model="gemini-3.1-flash", 
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION
             ),
@@ -123,7 +137,7 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     except Exception as e:
         error_msg = str(e)
         if "429" in error_msg:
-            st.warning("🚦 Peepo is thinking fast! Rate limit reached. Waiting 5s...")
+            st.warning("🚦 Peepo 3.1 is working hard! Waiting 5s to bypass rate limit...")
             time.sleep(5)
             st.rerun()
         else:
