@@ -159,7 +159,7 @@ if prompt := st.chat_input("Message pepo 3 ..."):
     
     try:
         response = client.models.generate_content(
-            model="gemini-3-flash-lite-preview", 
+            model="gemini-3.1-flash-lite-preview", 
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION
             ),
