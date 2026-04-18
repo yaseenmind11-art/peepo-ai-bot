@@ -44,7 +44,17 @@ st.markdown(r"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. API & SESSION SETUP
+# 3. PEEPO-SEC BRAIN (SYSTEM PROMPT)
+# ==========================================
+SYSTEM_INSTRUCTION = """
+You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
+Your mission is to help the user learn how to protect devices, find vulnerabilities 
+legally, and stop dangerous cyber-attacks. 
+Always prioritize teaching 'Defense' and 'Ethical Research'.
+"""
+
+# ==========================================
+# 4. API & SESSION SETUP
 # ==========================================
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
@@ -57,7 +67,6 @@ if "all_chats" not in st.session_state:
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
 
-# Sidebar
 with st.sidebar:
     st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
@@ -72,7 +81,7 @@ with st.sidebar:
 LOGO_PATH = "image_13ffcc.png"
 
 # ==========================================
-# 4. WELCOME SCREEN
+# 5. WELCOME SCREEN
 # ==========================================
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
@@ -88,7 +97,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 5. CHAT INPUT (GEMINI 2.0 STABLE)
+# 6. CHAT INPUT (GEMINI 3 FLASH)
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
@@ -99,11 +108,11 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # Using the official stable ID for Gemini 2.0 Flash
+        # UPDATED: Set to the newest Gemini 3 model
         response = client.models.generate_content(
             model="gemini-3-flash", 
             config=types.GenerateContentConfig(
-                system_instruction="You are Peepo-Sec, a world-class White Hat Hacker."
+                system_instruction=SYSTEM_INSTRUCTION
             ),
             contents=prompt
         )
@@ -114,14 +123,8 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     except Exception as e:
         error_msg = str(e)
         if "429" in error_msg:
-            st.warning("🚦 Gemini 3.0 is busy! Waiting 5 seconds to retry...")
+            st.warning("🚦 Peepo is thinking fast! Rate limit reached. Waiting 5s...")
             time.sleep(5)
-            st.rerun()
-        elif "404" in error_msg:
-            st.error("❌ Model not found. Attempting backup path...")
-            # Fallback to the full path if the short name fails
-            response = client.models.generate_content(model="models/gemini-2.0-flash", contents=prompt)
-            st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
             st.rerun()
         else:
             st.error(f"Error: {e}")
