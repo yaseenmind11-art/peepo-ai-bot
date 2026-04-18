@@ -101,7 +101,7 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     try:
         # Using the official stable ID for Gemini 2.0 Flash
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model="gemini-1.5-flash", 
             config=types.GenerateContentConfig(
                 system_instruction="You are Peepo-Sec, a world-class White Hat Hacker."
             ),
