@@ -149,7 +149,7 @@ else:
 # ==========================================
 # 6. CHAT INPUT
 # ==========================================
-if prompt := st.chat_input("Message peepo 3 ai..."):
+if prompt := st.chat_input("Message pepo 3 ..."):
     if st.session_state.current_chat is None:
         new_title = prompt[:25] + "..." if len(prompt) > 25 else prompt
         st.session_state.current_chat = new_title
@@ -159,7 +159,7 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model="gemini-3-flash-lite-preview", 
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION
             ),
