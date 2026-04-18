@@ -101,7 +101,7 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     try:
         # Using the official stable ID for Gemini 2.0 Flash
         response = client.models.generate_content(
-            model="gemini-1.5-flash", 
+            model="gemini-3-flash", 
             config=types.GenerateContentConfig(
                 system_instruction="You are Peepo-Sec, a world-class White Hat Hacker."
             ),
@@ -114,7 +114,7 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     except Exception as e:
         error_msg = str(e)
         if "429" in error_msg:
-            st.warning("🚦 Gemini 2.0 is busy! Waiting 5 seconds to retry...")
+            st.warning("🚦 Gemini 3.0 is busy! Waiting 5 seconds to retry...")
             time.sleep(5)
             st.rerun()
         elif "404" in error_msg:
