@@ -90,7 +90,7 @@ st.markdown(r"""
 # 3. PEEPO-SEC SYSTEM INSTRUCTIONS
 # ==========================================
 SYSTEM_INSTRUCTION = """
-You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
+You are Pepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
 Your mission is to help the user learn how to protect devices, find vulnerabilities 
 legally, and stop dangerous cyber-attacks. 
 Always prioritize teaching 'Defense' and 'Ethical Research'. 
@@ -136,7 +136,7 @@ if st.session_state.current_chat is None:
     st.markdown('</div>', unsafe_allow_html=True)
     
     # BIG TITLE
-    st.markdown('<p class="main-title">peepo 3 ai</p>', unsafe_allow_html=True)
+    st.markdown('<p class="main-title">pepo 3 AI</p>', unsafe_allow_html=True)
     
     # ZOOMED OUT SUBTITLE
     st.markdown('<p class="main-subtitle">ask me for anything!</p>', unsafe_allow_html=True)
