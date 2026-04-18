@@ -7,7 +7,7 @@ import os
 # 1. GOOGLE VERIFICATION & SEO
 # ==========================================
 # UPDATED: Page title changed to "pepo 3 ai"
-st.set_page_config(page_title="pepo 3 ai", page_icon="image_13ffcc.png")
+st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
 
 VERIFICATION_FILE = "google470ff30df2261297.html" 
 
@@ -115,7 +115,7 @@ if "current_chat" not in st.session_state:
 
 # Sidebar History
 with st.sidebar:
-    st.title("📂 Pepo History")
+    st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.current_chat = None 
         st.rerun()
@@ -148,7 +148,7 @@ else:
 # ==========================================
 # 6. CHAT INPUT
 # ==========================================
-if prompt := st.chat_input("Message pepo 3 ai..."):
+if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
         new_title = prompt[:25] + "..." if len(prompt) > 25 else prompt
         st.session_state.current_chat = new_title
