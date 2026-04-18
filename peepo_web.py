@@ -6,7 +6,7 @@ import os
 # ==========================================
 # 1. GOOGLE VERIFICATION & SEO
 # ==========================================
-# UPDATED: Page title changed to "pepo 3 ai"
+# REVERTED: Page title is back to "peepo 3 ai"
 st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
 
 VERIFICATION_FILE = "google470ff30df2261297.html" 
@@ -32,7 +32,7 @@ st.markdown(
 )
 
 # ==========================================
-# 2. THEME & STYLING
+# 2. THEME & STYLING (ZOOMED OUT LOOK)
 # ==========================================
 st.markdown(r"""
 <style>
@@ -87,11 +87,11 @@ st.markdown(r"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. PEPO-SEC SYSTEM INSTRUCTIONS
+# 3. PEEPO-SEC SYSTEM INSTRUCTIONS
 # ==========================================
-# UPDATED: AI name changed to "Pepo-Sec"
+# REVERTED: AI name back to "Peepo-Sec"
 SYSTEM_INSTRUCTION = """
-You are Pepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
+You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
 Your mission is to help the user learn how to protect devices, find vulnerabilities 
 legally, and stop dangerous cyber-attacks. 
 Always prioritize teaching 'Defense' and 'Ethical Research'. 
@@ -136,8 +136,8 @@ if st.session_state.current_chat is None:
         st.image(LOGO_PATH, width=120) 
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # UPDATED: Titles now say "pepo"
-    st.markdown('<p class="main-title">pepo 3 ai</p>', unsafe_allow_html=True)
+    # REVERTED: Titles now say "peepo"
+    st.markdown('<p class="main-title">peepo 3 ai</p>', unsafe_allow_html=True)
     st.markdown('<p class="main-subtitle">ask me for anything!</p>', unsafe_allow_html=True)
 else:
     for message in st.session_state.all_chats[st.session_state.current_chat]:
