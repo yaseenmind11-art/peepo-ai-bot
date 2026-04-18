@@ -114,7 +114,7 @@ if "current_chat" not in st.session_state:
 
 # Sidebar History
 with st.sidebar:
-    st.title("📂 Peepo History")
+    st.title("📂 Pepo History")
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.current_chat = None 
         st.rerun()
@@ -159,7 +159,7 @@ if prompt := st.chat_input("Message pepo 3 ..."):
     
     try:
         response = client.models.generate_content(
-            model="gemini-3.1-flash-lite-preview", 
+            model="gemini-2.0-flash", 
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION
             ),
