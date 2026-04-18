@@ -9,7 +9,7 @@ import os
 st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
 
 # ==========================================
-# 2. THEME & STYLE (THE BIG TITLE)
+# 2. THEME & STYLE
 # ==========================================
 st.markdown(r"""
 <style>
@@ -26,17 +26,17 @@ st.markdown(r"""
     text-align: center; margin-top: -10px; letter-spacing: -1.5px;
 }
 .main-subtitle {
-    font-size: 22px !important; text-align: center;
-    color: #666; margin-top: -20px;
+    font-size: 22px !important; text-align: center; color: #666; margin-top: -20px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. API SETUP
+# 3. API SETUP (THE STABILITY FIX)
 # ==========================================
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
+    # Use the specific version that supports the most stable models
     client = genai.Client(api_key=API_KEY)
 except Exception:
     st.error("⚠️ API Key missing!")
@@ -77,7 +77,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 5. CHAT INPUT (STABLE 1.5 FLASH)
+# 5. CHAT INPUT (STABLE MODEL ID)
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
@@ -88,11 +88,11 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # THE FIX: Using 1.5 Flash for high reliability and no 429 errors
+        # Using gemini-1.5-flash-latest - This is the most reliable version for APIs
         response = client.models.generate_content(
-            model="gemini-1.5-flash", 
+            model="gemini-1.5-flash-latest", 
             config=types.GenerateContentConfig(
-                system_instruction="You are Peepo-Sec, a White Hat Hacker."
+                system_instruction="You are Peepo-Sec, a world-class White Hat Hacker."
             ),
             contents=prompt
         )
@@ -100,4 +100,8 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
         st.rerun() 
     except Exception as e:
-        st.error(f"Error: {e}")
+        # If it still hits a limit, we show a clean message instead of a crash
+        if "429" in str(e):
+            st.error("🚦 Google's free servers are very busy right now. Please wait about 60 seconds and try again!")
+        else:
+            st.error(f"Error: {e}")
