@@ -112,7 +112,7 @@ if prompt := st.chat_input("Message Peepo 3..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        response = client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
+        response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=prompt)
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
         st.rerun() 
     except Exception as e:
