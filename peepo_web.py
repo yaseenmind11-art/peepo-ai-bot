@@ -74,7 +74,7 @@ if st.session_state.current_chat is None:
         st.image(LOGO_PATH, width=130)
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center;'>Welcome to Peepo 3</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center;'>Ready for some Arduino coding or science help?</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center;'>How can I assist you today? </p>", unsafe_allow_html=True)
 else:
     for message in st.session_state.all_chats[st.session_state.current_chat]:
         avatar = LOGO_PATH if message["role"] == "assistant" else None
