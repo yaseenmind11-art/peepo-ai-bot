@@ -32,21 +32,19 @@ st.markdown(r"""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. API SETUP (THE STABILITY FIX)
+# 3. API SETUP
 # ==========================================
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
-    # Use the specific version that supports the most stable models
     client = genai.Client(api_key=API_KEY)
 except Exception:
-    st.error("⚠️ API Key missing!")
+    st.error("⚠️ API Key missing in Secrets!")
 
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
 
-# Sidebar
 with st.sidebar:
     st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
@@ -77,7 +75,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 5. CHAT INPUT (STABLE MODEL ID)
+# 5. CHAT INPUT (STABILITY PATCH)
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
@@ -88,11 +86,11 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # Using gemini-1.5-flash-latest - This is the most reliable version for APIs
+        # THE ULTIMATE FIX: Using the exact technical ID for the stable model
         response = client.models.generate_content(
-            model="gemini-1.5-flash-latest", 
+            model="gemini-1.5-flash", 
             config=types.GenerateContentConfig(
-                system_instruction="You are Peepo-Sec, a world-class White Hat Hacker."
+                system_instruction="You are Peepo-Sec, a White Hat Hacker."
             ),
             contents=prompt
         )
@@ -100,8 +98,10 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
         st.rerun() 
     except Exception as e:
-        # If it still hits a limit, we show a clean message instead of a crash
-        if "429" in str(e):
-            st.error("🚦 Google's free servers are very busy right now. Please wait about 60 seconds and try again!")
-        else:
+        # If the model still can't be found, we try the fallback ID
+        try:
+            response = client.models.generate_content(model="gemini-1.5-flash-001", contents=prompt)
+            st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
+            st.rerun()
+        except:
             st.error(f"Error: {e}")
