@@ -6,7 +6,7 @@ import os
 # ==========================================
 # 1. GOOGLE VERIFICATION & SEO
 # ==========================================
-st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
+st.set_page_config(page_title="pepo 3 ai", page_icon="image_13ffcc.png")
 
 VERIFICATION_FILE = "google470ff30df2261297.html" 
 
