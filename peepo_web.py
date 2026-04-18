@@ -31,7 +31,7 @@ st.markdown(
 )
 
 # ==========================================
-# 2. THEME & STYLING (THE PERFECT ZOOM)
+# 2. THEME & STYLING (THE CLEAN ZOOM)
 # ==========================================
 st.markdown(r"""
 <style>
@@ -50,36 +50,38 @@ st.markdown(r"""
     background-color: #0a0a0a !important;
 }
 
-/* LOGO BOX - Zoomed out a bit */
+/* LOGO BOX - Zoomed out for space */
 .centered-logo {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: -10px;
+    margin-bottom: 10px;
+    padding-top: 40px;
 }
 
-/* MAIN TITLE - Slightly Bigger & Bolder */
+/* MAIN TITLE - Big and bold but fits the frame */
 .main-title {
-    font-size: 95px !important; /* Boosted size */
+    font-size: 85px !important; 
     font-weight: 900 !important;
     text-align: center;
-    margin-top: -15px;
-    letter-spacing: -2px;
+    margin-top: -10px;
+    letter-spacing: -1.5px;
     color: #31333F;
 }
 
-/* SUBTITLE - Zoomed out (Smaller than title) */
+/* SUBTITLE - Clean and small */
 .main-subtitle {
-    font-size: 26px !important;
+    font-size: 22px !important;
     text-align: center;
-    color: #555;
+    color: #666;
     margin-top: -20px;
     font-weight: 400;
+    opacity: 0.8;
 }
 
 /* DARK MODE TEXT COLOR */
 [data-theme="dark"] .main-title { color: #ffffff !important; }
-[data-theme="dark"] .main-subtitle { color: #bbbbbb !important; }
+[data-theme="dark"] .main-subtitle { color: #cccccc !important; }
 
 </style>
 """, unsafe_allow_html=True)
@@ -130,13 +132,13 @@ LOGO_PATH = "image_13ffcc.png"
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
     if os.path.exists(LOGO_PATH):
-        st.image(LOGO_PATH, width=150) # Logo is clear but not too huge
+        st.image(LOGO_PATH, width=120) # Slightly smaller logo for better zoom
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # HUGE TITLE
+    # BIG TITLE
     st.markdown('<p class="main-title">peepo 3 ai</p>', unsafe_allow_html=True)
     
-    # CLEAN SUBTITLE
+    # ZOOMED OUT SUBTITLE
     st.markdown('<p class="main-subtitle">ask me for anything!</p>', unsafe_allow_html=True)
 else:
     for message in st.session_state.all_chats[st.session_state.current_chat]:
