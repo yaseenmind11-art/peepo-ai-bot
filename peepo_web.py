@@ -2,33 +2,12 @@ import streamlit as st
 from google import genai
 from google.genai import types
 import os
+import time
 
 # ==========================================
 # 1. GOOGLE VERIFICATION & SEO
 # ==========================================
 st.set_page_config(page_title="peepo 3 ai", page_icon="image_13ffcc.png")
-
-VERIFICATION_FILE = "google470ff30df2261297.html" 
-
-if VERIFICATION_FILE in st.query_params or "verify" in st.query_params:
-    st.write(f"google-site-verification: {VERIFICATION_FILE}")
-    st.stop()
-
-st.markdown(f'<meta name="google-site-verification" content="{VERIFICATION_FILE.replace(".html", "")}" />', unsafe_allow_html=True)
-
-# Google Analytics
-st.markdown(
-    """
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EBWJ79E1EE"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-EBWJ79E1EE');
-    </script>
-    """, 
-    unsafe_allow_html=True
-)
 
 # ==========================================
 # 2. THEME & STYLING
@@ -40,9 +19,6 @@ st.markdown(r"""
 }
 [data-theme="dark"] .stApp, [data-theme="dark"] [data-testid="stHeader"] {
     background-color: #000000 !important;
-}
-[data-theme="dark"] [data-testid="stSidebar"] {
-    background-color: #0a0a0a !important;
 }
 .centered-logo {
     display: flex;
@@ -57,44 +33,31 @@ st.markdown(r"""
     text-align: center;
     margin-top: -10px;
     letter-spacing: -1.5px;
-    color: #31333F;
 }
 .main-subtitle {
     font-size: 22px !important;
     text-align: center;
     color: #666;
     margin-top: -20px;
-    font-weight: 400;
 }
-[data-theme="dark"] .main-title { color: #ffffff !important; }
-[data-theme="dark"] .main-subtitle { color: #cccccc !important; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 3. PEEPO-SEC BRAIN
-# ==========================================
-SYSTEM_INSTRUCTION = """
-You are Peepo-Sec, a world-class White Hat Hacker and Cybersecurity Researcher. 
-Your mission is to help the user learn how to protect devices, find vulnerabilities 
-legally, and stop dangerous cyber-attacks. 
-Always prioritize teaching 'Defense' and 'Ethical Research'. 
-"""
-
-# ==========================================
-# 4. API SETUP
+# 3. API & SESSION SETUP
 # ==========================================
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
     client = genai.Client(api_key=API_KEY)
 except Exception:
-    st.error("⚠️ API Key missing! Check your Streamlit Secrets.")
+    st.error("⚠️ API Key missing in Streamlit Secrets!")
 
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
 
+# Sidebar
 with st.sidebar:
     st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
@@ -109,7 +72,7 @@ with st.sidebar:
 LOGO_PATH = "image_13ffcc.png"
 
 # ==========================================
-# 5. WELCOME SCREEN
+# 4. WELCOME SCREEN
 # ==========================================
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
@@ -125,7 +88,7 @@ else:
             st.markdown(message["content"])
 
 # ==========================================
-# 6. CHAT INPUT (FIXED MODEL NAME)
+# 5. CHAT INPUT (GEMINI 2.0 STABLE)
 # ==========================================
 if prompt := st.chat_input("Message peepo 3 ai..."):
     if st.session_state.current_chat is None:
@@ -136,20 +99,29 @@ if prompt := st.chat_input("Message peepo 3 ai..."):
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     
     try:
-        # CHANGED TO 1.5 FLASH FOR BETTER RELIABILITY
+        # Using the official stable ID for Gemini 2.0 Flash
         response = client.models.generate_content(
-            model="gemini-1.5-flash", 
+            model="gemini-2.0-flash", 
             config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_INSTRUCTION
+                system_instruction="You are Peepo-Sec, a world-class White Hat Hacker."
             ),
             contents=prompt
         )
         
         st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
         st.rerun() 
+
     except Exception as e:
-        # Improved error display
-        if "429" in str(e):
-            st.error("🚦 Peepo is taking a quick breath (Rate Limit). Please wait 30 seconds and try again!")
+        error_msg = str(e)
+        if "429" in error_msg:
+            st.warning("🚦 Gemini 2.0 is busy! Waiting 5 seconds to retry...")
+            time.sleep(5)
+            st.rerun()
+        elif "404" in error_msg:
+            st.error("❌ Model not found. Attempting backup path...")
+            # Fallback to the full path if the short name fails
+            response = client.models.generate_content(model="models/gemini-2.0-flash", contents=prompt)
+            st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
+            st.rerun()
         else:
             st.error(f"Error: {e}")
