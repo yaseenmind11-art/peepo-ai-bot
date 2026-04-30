@@ -11,7 +11,63 @@ if "google470ff30df2261297.html" in st.query_params:
 # --- 2. PAGE CONFIG ---
 st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
 
-# --- 3. THEME STYLING ---
+def reset_everything():
+    st.session_state.bg_p = "#0e1117"
+    st.session_state.side_p = "#262730"
+    st.session_state.text_p = "#fafafa"
+    st.session_state.accent_p = "#FF4B4B"
+ 
+    for i in range(0, 7):
+        k = "text" if i == 0 else f"text{i}"
+        st.session_state[k] = ""
+
+def Light_Mode():
+    st.session_state.bg_p = "#FFFFFF"
+    st.session_state.side_p = "#F0F2F6"
+    st.session_state.text_p = "#262730"
+    st.session_state.accent_p = "#FF4B4B"
+ 
+    for i in range(0, 7):
+        k = "text" if i == 0 else f"text{i}"
+        st.session_state[k] = ""
+        
+if "bg_p" not in st.session_state:
+    st.session_state.bg_p = "#0e1117"
+if "side_p" not in st.session_state:
+    st.session_state.side_p = "#262730"
+if "text_p" not in st.session_state:
+    st.session_state.text_p = "#fafafa"
+if "accent_p" not in st.session_state:
+    st.session_state.accent_p = "#FF4B4B"
+
+# --- 3. SIDEBAR ---
+st.sidebar.title("Theme Customization 🎨")
+bgcolorpick = st.sidebar.color_picker("• Choose a color for your background", key="bg_p")
+sidebgcolorpick = st.sidebar.color_picker("• Choose a color for your sidebar background", key="side_p")
+textcolorpick = st.sidebar.color_picker("• Choose a color for the text", key="text_p")
+primarycolorpick = st.sidebar.color_picker("• Choose an accent color", key="accent_p")
+
+
+st.sidebar.button("Dark Mode Default Theme", on_click=reset_everything)
+st.sidebar.button("Light Mode Default Theme", on_click=Light_Mode)
+    
+
+st.markdown(f"""
+    <style>
+    .stApp {{ background-color: {bgcolorpick}; }}
+    section[data-testid="stSidebar"] {{ background-color: {sidebgcolorpick} !important; }}
+    .stApp, p, h1, h2, h3, span {{ color: {textcolorpick} !important; }}
+    button, [data-baseweb="button"] {{ 
+        background-color: {primarycolorpick} !important; 
+        color: white !important; 
+    }}
+    /* Keeps input fields light grey as seen in your screenshot */
+    .stTextInput>div>div>input {{
+        background-color: #F0F2F6 !important;
+        color: #31333F !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
 st.markdown(r"""
 <style>
 /* LIGHT THEME */
