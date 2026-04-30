@@ -1,14 +1,10 @@
 import streamlit as st
 from google import genai
 import os
-
-# --- 1. THE ULTIMATE VERIFICATION DOOR ---
-# This catches Google's request before the rest of the app even loads.
 if "google470ff30df2261297.html" in st.query_params:
     st.write("google-site-verification: google470ff30df2261297.html")
     st.stop()
 
-# --- 2. PAGE CONFIG ---
 st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
 
 def reset_everything():
@@ -40,7 +36,6 @@ if "text_p" not in st.session_state:
 if "accent_p" not in st.session_state:
     st.session_state.accent_p = "#A6A0A0"
 
-# --- 3. SIDEBAR ---
 st.sidebar.title("Theme Customization 🎨")
 bgcolorpick = st.sidebar.color_picker("• Choose a color for your background", key="bg_p")
 sidebgcolorpick = st.sidebar.color_picker("• Choose a color for your sidebar background", key="side_p")
@@ -95,20 +90,17 @@ st.markdown(r"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 4. API SETUP ---
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"].strip().replace('"', '')
     client = genai.Client(api_key=API_KEY)
 except Exception as e:
     st.error("API Key missing! Add it to Streamlit Secrets.")
 
-# --- 5. SESSION STATE ---
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
 
-# --- 6. SIDEBAR ---
 with st.sidebar:
     st.title("📂 Peepo History")
     if st.button("➕ New Chat", use_container_width=True):
@@ -122,7 +114,6 @@ with st.sidebar:
                 st.session_state.current_chat = chat_title
                 st.rerun()
 
-# --- 7. MAIN INTERFACE ---
 LOGO_PATH = "image_13ffcc.png"
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
@@ -137,7 +128,6 @@ else:
         with st.chat_message(message["role"], avatar=avatar):
             st.markdown(message["content"])
 
-# --- 8. CHAT INPUT BAR ---
 if prompt := st.chat_input("Message Peepo 3..."):
     if st.session_state.current_chat is None:
         new_title = prompt[:25] + "..." if len(prompt) > 25 else prompt
