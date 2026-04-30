@@ -7,6 +7,19 @@ if "google470ff30df2261297.html" in st.query_params:
 
 st.set_page_config(page_title="Peepo 3 AI", page_icon="image_13ffcc.png")
 
+with st.sidebar:
+    st.title("📂 Peepo History")
+    if st.button("➕ New Chat", use_container_width=True):
+        st.session_state.current_chat = None 
+        st.rerun()
+    st.divider()
+    search_query = st.text_input("🔍 Search chats...", placeholder="Type to filter...")
+    for chat_title in reversed(list(st.session_state.all_chats.keys())):
+        if not search_query or search_query.lower() in chat_title.lower():
+            if st.button(chat_title, key=chat_title, use_container_width=True):
+                st.session_state.current_chat = chat_title
+                st.rerun()
+
 def reset_everything():
     st.session_state.bg_p = "#0e1117"
     st.session_state.side_p = "#262730"
@@ -100,19 +113,6 @@ if "all_chats" not in st.session_state:
     st.session_state.all_chats = {} 
 if "current_chat" not in st.session_state:
     st.session_state.current_chat = None 
-
-with st.sidebar:
-    st.title("📂 Peepo History")
-    if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.current_chat = None 
-        st.rerun()
-    st.divider()
-    search_query = st.text_input("🔍 Search chats...", placeholder="Type to filter...")
-    for chat_title in reversed(list(st.session_state.all_chats.keys())):
-        if not search_query or search_query.lower() in chat_title.lower():
-            if st.button(chat_title, key=chat_title, use_container_width=True):
-                st.session_state.current_chat = chat_title
-                st.rerun()
 
 LOGO_PATH = "image_13ffcc.png"
 if st.session_state.current_chat is None:
