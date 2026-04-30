@@ -15,7 +15,7 @@ def reset_everything():
     st.session_state.bg_p = "#0e1117"
     st.session_state.side_p = "#262730"
     st.session_state.text_p = "#fafafa"
-    st.session_state.accent_p = "#FF4B4B"
+    st.session_state.accent_p = "#A6A0A0"
  
     for i in range(0, 7):
         k = "text" if i == 0 else f"text{i}"
@@ -25,7 +25,7 @@ def Light_Mode():
     st.session_state.bg_p = "#FFFFFF"
     st.session_state.side_p = "#F0F2F6"
     st.session_state.text_p = "#262730"
-    st.session_state.accent_p = "#FFFFFF"
+    st.session_state.accent_p = "#A6A0A0"
  
     for i in range(0, 7):
         k = "text" if i == 0 else f"text{i}"
@@ -38,7 +38,7 @@ if "side_p" not in st.session_state:
 if "text_p" not in st.session_state:
     st.session_state.text_p = "#fafafa"
 if "accent_p" not in st.session_state:
-    st.session_state.accent_p = "#FFFFFF"
+    st.session_state.accent_p = "#A6A0A0"
 
 # --- 3. SIDEBAR ---
 st.sidebar.title("Theme Customization 🎨")
