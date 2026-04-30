@@ -1,6 +1,13 @@
 import streamlit as st
 from google import genai
 import os
+
+# Initialize session state variables at the very beginning to prevent AttributeErrors
+if "all_chats" not in st.session_state:
+    st.session_state.all_chats = {} 
+if "current_chat" not in st.session_state:
+    st.session_state.current_chat = None 
+
 if "google470ff30df2261297.html" in st.query_params:
     st.write("google-site-verification: google470ff30df2261297.html")
     st.stop()
@@ -108,11 +115,6 @@ try:
     client = genai.Client(api_key=API_KEY)
 except Exception as e:
     st.error("API Key missing! Add it to Streamlit Secrets.")
-
-if "all_chats" not in st.session_state:
-    st.session_state.all_chats = {} 
-if "current_chat" not in st.session_state:
-    st.session_state.current_chat = None 
 
 LOGO_PATH = "image_13ffcc.png"
 if st.session_state.current_chat is None:
