@@ -1,7 +1,7 @@
 # Peepo 3 AI - Streamlit Assistant
 *(Peepo 3 AI)*
 
-Peepo 3 AI is an interactive AI assistant built using Streamlit, Python, and the Gemini API. It can help you write Arduino code, answer science questions, and answere any quwstions you have!
+Peepo 3 AI is an interactive AI assistant built using Streamlit, Python, and the Gemini API. It can help you write Arduino code, answer science questions, and answer any quwstions you have!
 
 ## Live App
 🚀 Try it here: [(https://peepo-3-ai.streamlit.app/)]
