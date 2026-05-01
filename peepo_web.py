@@ -12,7 +12,7 @@ if "google470ff30df2261297.html" in st.query_params:
     st.write("google-site-verification: google470ff30df2261297.html")
     st.stop()
 
-st.set_page_config(page_title="Peepo 3 AI", page_icon="peepo-ai-preview.png")
+st.set_page_config(page_title="Peepo 3 AI", page_icon="Peepopicture3049.png")
 
 with st.sidebar:
     st.title("📂 Peepo History")
@@ -116,7 +116,7 @@ try:
 except Exception as e:
     st.error("API Key missing! Add it to Streamlit Secrets.")
 
-LOGO_PATH = "peepo-ai-preview.png"
+LOGO_PATH = "Peepopicture3049.png"
 if st.session_state.current_chat is None:
     st.markdown('<div class="centered-logo">', unsafe_allow_html=True)
     if os.path.exists(LOGO_PATH):
