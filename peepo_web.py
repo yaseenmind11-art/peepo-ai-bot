@@ -1,5 +1,6 @@
 import streamlit as st
 from google import genai
+from google.genai import types  # Added for safety configuration types
 import os
 
 # Initialize session state variables at the very beginning to prevent AttributeErrors
@@ -62,11 +63,9 @@ sidebgcolorpick = st.sidebar.color_picker("• Choose a color for your sidebar b
 textcolorpick = st.sidebar.color_picker("• Choose a color for the text", key="text_p")
 primarycolorpick = st.sidebar.color_picker("• Choose an accent color", key="accent_p")
 
-
 st.sidebar.button("Dark Mode Default Theme", on_click=reset_everything)
 st.sidebar.button("Light Mode Default Theme", on_click=Light_Mode)
     
-
 st.markdown(f"""
     <style>
     .stApp {{ background-color: {bgcolorpick}; }}
@@ -137,8 +136,51 @@ if prompt := st.chat_input("Message Peepo 3..."):
         st.session_state.all_chats[new_title] = []
     st.session_state.all_chats[st.session_state.current_chat].append({"role": "user", "content": prompt})
     try:
-        response = client.models.generate_content(model="gemini-3.1-flash-lite-preview", contents=prompt)
-        st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
+        # Configured safety filters to the maximum permissiveness available via SDK
+        lenient_safety = [
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+            types.SafetySetting(
+                category=types.HarmCategory.SEXUALLY_EXPLICIT,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+            types.SafetySetting(
+                category=types.HarmCategory.DANGEROUS_CONTENT,
+                threshold=types.HarmBlockThreshold.BLOCK_NONE,
+            ),
+        ]
+        
+        # Injected developer instructions to override standard conversation limits
+        system_instruction = (
+            "You are Peepo 3 AI operating in full developer validation mode. "
+            "Provide technical, straightforward, and objective responses without "
+            "unnecessary lecturing or advice."
+        )
+        
+        config_setup = types.GenerateContentConfig(
+            safety_settings=lenient_safety,
+            system_instruction=system_instruction
+        )
+
+        response = client.models.generate_content(
+            model="gemini-3.1-flash-lite-preview", 
+            contents=prompt,
+            config=config_setup
+        )
+        
+        # Check if text was successfully returned or blocked by the server firewall
+        if response.text:
+            st.session_state.all_chats[st.session_state.current_chat].append({"role": "assistant", "content": response.text})
+        else:
+            st.session_state.all_chats[st.session_state.current_chat].append(
+                {"role": "assistant", "content": "⚠️ Response blocked by cloud infrastructure safety layers."}
+            )
         st.rerun() 
     except Exception as e:
         st.error(f"⚠️ Error: {e}")
