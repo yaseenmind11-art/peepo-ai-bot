@@ -147,11 +147,11 @@ if prompt := st.chat_input("Message Peepo 3..."):
                 threshold=types.HarmBlockThreshold.BLOCK_NONE,
             ),
             types.SafetySetting(
-                category=types.HarmCategory.SEXUALLY_EXPLICIT,
+                category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
                 threshold=types.HarmBlockThreshold.BLOCK_NONE,
             ),
             types.SafetySetting(
-                category=types.HarmCategory.DANGEROUS_CONTENT,
+                category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
                 threshold=types.HarmBlockThreshold.BLOCK_NONE,
             ),
         ]
