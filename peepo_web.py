@@ -75,19 +75,18 @@ st.markdown(f"""
         background-color: {primarycolorpick} !important; 
         color: white !important; 
     }}
-    /* Keeps input fields light grey as seen in your screenshot */
     .stTextInput>div>div>input {{
         background-color: #F0F2F6 !important;
         color: #31333F !important;
     }}
-    /* Targets the assistant container explicitly to output black text */
     [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) div,
     [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) p,
-    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) span {
+    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) span {{
         color: #000000 !important;
-    }
+    }}
     </style>
     """, unsafe_allow_html=True)
+
 st.markdown(r"""
 <style>
 /* LIGHT THEME */
