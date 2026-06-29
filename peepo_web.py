@@ -79,9 +79,13 @@ st.markdown(f"""
         background-color: #F0F2F6 !important;
         color: #31333F !important;
     }}
-    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) div,
-    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) p,
-    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) span {{
+    
+    /* Forces ALL elements, text blocks, and code tokens inside the assistant chat box to be black */
+    div[data-testid="stChatMessage"]:has(img) div[data-testid="stMarkdownContainer"] *,
+    div[data-testid="stChatMessage"]:has(img) div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stChatMessage"]:has(img) div[data-testid="stMarkdownContainer"] span,
+    div[data-testid="stChatMessage"]:has(img) div[data-testid="stMarkdownContainer"] code,
+    div[data-testid="stChatMessage"]:has(img) div[data-testid="stMarkdownContainer"] pre {{
         color: #000000 !important;
     }}
     </style>
