@@ -1,6 +1,6 @@
 import streamlit as st
 from google import genai
-from google.genai import types  # Added for safety configuration types
+from google.genai import types
 import os
 
 # Initialize session state variables at the very beginning to prevent AttributeErrors
@@ -80,6 +80,12 @@ st.markdown(f"""
         background-color: #F0F2F6 !important;
         color: #31333F !important;
     }}
+    /* Targets the assistant container explicitly to output black text */
+    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) div,
+    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) p,
+    [data-testid="stChatMessage"]:has([data-testid="stchatAvatarAssistant"]) span {
+        color: #000000 !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 st.markdown(r"""
