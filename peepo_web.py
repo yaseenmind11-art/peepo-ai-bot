@@ -31,7 +31,7 @@ with st.sidebar:
 def reset_everything():
     st.session_state.bg_p = "#0e1117"
     st.session_state.side_p = "#262730"
-    st.session_state.text_p = "#fafafa"
+    st.session_state.text_p = "#000000"
     st.session_state.accent_p = "#A6A0A0"
  
     for i in range(0, 7):
